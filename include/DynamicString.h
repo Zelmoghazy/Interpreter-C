@@ -1,5 +1,7 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct DynamicString DynamicString;
 int getEnd(DynamicString *str);
@@ -16,3 +18,4 @@ void Expand(DynamicString *string);
 void Shrink(DynamicString *string);
 DynamicString *readFile(char* path);
 int CompareDS(DynamicString* s1,DynamicString *s2);
+DynamicString *Substring(DynamicString* string, int start, int end);

@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "../include/DynamicString.h"
 
 typedef struct DynamicString
 {
@@ -139,4 +137,16 @@ int CompareDS(DynamicString* s1, DynamicString* s2) {
         str2++;
     }
     return *str1 - *str2;
+}
+
+DynamicString *Substring(DynamicString* string, int start, int end){
+    if(start>end){
+        exit(EXIT_FAILURE);
+    }
+    DynamicString *newStr = newString(end-start+1);
+    for (int i = start; i < end; i++)
+    {
+        stringAppendchar(newStr,getCharAt(string,i));
+    }
+    return newStr;
 }
