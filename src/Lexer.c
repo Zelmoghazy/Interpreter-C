@@ -33,7 +33,7 @@ TokenType IdentifierFromToken(DynamicString* identifier){
     int n = sizeof(name)/sizeof(name[0]);
     for (int i = 0; i <n ; i++)
     {
-        if(!strcmp(getCharArray(identifier),name[i])){
+        if(!strcmp(ds_get_char_array(identifier),name[i])){
             return i;
         }
     }
@@ -61,7 +61,7 @@ Lexer* NewLexer(DynamicString* input){
  * Free Allocated Memory
  */
 void FreeLexer(Lexer* L){
-    freeString(L->input);
+    ds_free(L->input);
     free(L);
 }
 
@@ -73,10 +73,10 @@ void FreeLexer(Lexer* L){
  */
 
 void readChar(Lexer *L){
-    if (L->readPosition >= getEnd(L->input)){ // Exceeded the input
-        L->ch = NULL;
+    if (L->readPosition >= ds_get_length(L->input)){ // Exceeded the input
+        L->ch = 0;
     }else{
-        L->ch = getCharAt(L->input,L->readPosition);   // set next character
+        L->ch = ds_get_char_at(L->input,L->readPosition);   // set next character
     }
     L->position = L->readPosition;           // advance position
     L->readPosition++;                       // readposition always points to next position   
@@ -88,13 +88,13 @@ void readChar(Lexer *L){
 Token newToken(TokenType type, char ch) {
     Token token;
     token.Type = type;
-    token.Literal = newString(1);
-    stringAppendchar(token.Literal,ch);
+    token.Literal = ds_new(1);
+    ds_append_char(token.Literal,ch);
     return token;
 }
 
 void freeToken(Token T){
-    freeString(T.Literal);
+    ds_free(T.Literal);
 }
 
 /**
@@ -131,7 +131,7 @@ Token NextToken(Lexer* L) {
             tok = newToken(RBRACE, L->ch);
             break;
         case '\0':
-            tok.Literal =  newStringInit("");
+            tok.Literal =  ds_new_init("");
             tok.Type = EOFILE;
             break;
         default:{
@@ -153,7 +153,7 @@ DynamicString *readIdentifier(Lexer *L){
     while(isLetter(L->ch)){
         readChar(L);
     }
-    return Substring(L->input,position,L->position);
+    return ds_substring(L->input,position,L->position);
 }
 
 bool isLetter(char ch) {
