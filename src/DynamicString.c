@@ -1,34 +1,26 @@
 #include "../include/DynamicString.h"
 
-/**
- * END : String Length
- * MAX : String Capacity 
- */
-typedef struct DynamicString{
-    char *str;
-    int END;
-    int MAX;
-}DynamicString;
+
 
 /**
  *  Access Internal string data through those only  
  */
-int ds_get_capacity(DynamicString *string){
-    return string->END;
+size_t ds_get_length(DynamicString *string){
+    return string->end;
 }
 
-int ds_get_capacity(DynamicString *string){
-    return string->MAX;
+size_t ds_get_capacity(DynamicString *string){
+    return string->max;
 }
 
 char* ds_get_char_array(DynamicString *string){
     return string->str;
 }
 
-char ds_get_char_at(DynamicString *string, int index){
-    if(index > string->END){
+char ds_get_char_at(DynamicString *string, size_t index){
+    if(index > string->end){
         printf("getCharAt: Index Exceeded string length\n");
-        return string->str[string->END-2];
+        return string->str[string->end-2];
     }else{
         return string->str[index];
     }
@@ -37,19 +29,20 @@ char ds_get_char_at(DynamicString *string, int index){
 /**
  *  Constructor that takes an initial size 
  */
-DynamicString* ds_new(int initialSize){
+DynamicString* ds_new(size_t initialSize){
     DynamicString *string = malloc(sizeof(DynamicString));
     if(string == NULL){
         printf("newString: Allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    string->MAX = initialSize+1;
-    string->END = 1;
-    string->str = calloc(string->MAX,sizeof(char));
+    string->max = initialSize+1;
+    string->end = 1;
+    string->str = malloc(string->max*sizeof(char));
     if(string->str == NULL){
         printf("newString: str allocation failed\n");
         exit(EXIT_FAILURE);
     }
+    string->str[string->end] = '\0';
     return string;
 }
 
@@ -57,8 +50,11 @@ DynamicString* ds_new(int initialSize){
  *  Constructor that takes an initial string 
  */
 DynamicString* ds_new_init(char * initialString){
-    int size = strlen(initialString);
+    size_t size = strlen(initialString);
     DynamicString *string = ds_new(size);
+    if(size == 0){
+        string->str[0] = '\0';
+    }
     for (size_t i = 0; i < size; i++){
         ds_append_char(string,initialString[i]);
     }
@@ -78,15 +74,18 @@ void ds_free(DynamicString *string){
  *  Print String 
  */
 void ds_print(DynamicString *string){
-    printf("%s \n",string->str);
+    for (size_t i =0 ; i < string->end; i++){
+        printf("%c",string->str[i]);
+    }
+    printf("\n");  
 }
 
 /**
  *  Expand String when capacity is exceeded.
  */
 void ds_expand(DynamicString *string){
-    string->MAX *= 2;
-    char *Expanded = realloc(string->str,string->MAX*sizeof(char));
+    string->max *= 2;
+    char *Expanded = realloc(string->str,string->max*sizeof(char));
     if(Expanded == NULL){
         printf("Expand: reallocation failed\n");
         exit(EXIT_FAILURE);
@@ -98,8 +97,8 @@ void ds_expand(DynamicString *string){
  *  Shrink String when only quarter of capacity is used.
  */
 void ds_shrink(DynamicString *string){
-    string->MAX /= 2;
-    char *Shrinked = realloc(string->str,string->MAX*sizeof(char));
+    string->max /= 2;
+    char *Shrinked = realloc(string->str,string->max*sizeof(char));
     if(Shrinked == NULL){
         printf("Shrink: reallocation failed\n");
         exit(EXIT_FAILURE);
@@ -112,10 +111,10 @@ void ds_shrink(DynamicString *string){
  *  expand automatically when capacity exceeded.
  */
 void ds_append_char(DynamicString *string, char value){
-    if(string->END < string->MAX){
-        string->str[string->END-1] = value;
-        string->str[string->END] = '\0';
-        string->END++;
+    if(string->end < string->max){
+        string->str[string->end-1] = value;
+        string->str[string->end] = '\0';
+        string->end++;
     }else{
         ds_expand(string);
         ds_append_char(string,value);
@@ -126,12 +125,12 @@ void ds_append_char(DynamicString *string, char value){
  *  Concatenate a char array to the string.
  */
 void ds_concat(DynamicString *string, char *str2){
-    int size = strlen(str2);
-    for (int i = 0; i < size; i++){
-        if (string->END < string->MAX){
-            string->str[string->END - 1] = str2[i];
-            string->str[string->END] = '\0';
-            string->END++;
+    size_t size = strlen(str2);
+    for (size_t i = 0; i < size; i++){
+        if (string->end < string->max){
+            string->str[string->end - 1] = str2[i];
+            string->str[string->end] = '\0';
+            string->end++;
         }else{
             ds_expand(string);
             i--;
@@ -169,41 +168,48 @@ DynamicString *ds_read_file(char* path, bool(* filter)(char)){
 int ds_compare(DynamicString* s1, DynamicString* s2) {
     char* str1 = s1->str;
     char* str2 = s2->str;
-
-    while (*str1 && (*str1 == *str2)) {
-        str1++;
-        str2++;
-    }
-    return *str1 - *str2;
+    return strcmp(str1,str2);
 }
 
 /**
  *  returns a substring as a new string.
  */
-DynamicString *ds_substring(DynamicString* string, int start, int end){
+DynamicString *ds_substring(DynamicString* string, size_t start, size_t end){
     if(start > end){
         printf("Substring: start exceeds end");
         int temp = start;
         start = end;
         end = temp;
     }
-    if(end > string->END){
+    if(end > string->end){
         printf("Substring: end exceeds string length");
-        end = string->END;
+        end = string->end;
     }
     DynamicString *newStr = ds_new(end-start+1);
-    for (int i = start; i < end; i++){
+    for (size_t i = start; i < end; i++){
         ds_append_char(newStr,ds_get_char_at(string,i));
     }
     return newStr;
 }
 
-void ds_copy(DynamicString* s1, DynamicString* s2){
-    if(s2->MAX > s1->MAX){
-        printf("StringCopy: cant copy a larger string to a smaller one.");
-        exit(EXIT_FAILURE);
-    }        
-    for (int i = 0; i < s2->END; i++){
+void ds_copy(DynamicString* s1, DynamicString* s2){       
+    for (size_t i = 0; i < s2->end; i++){
         ds_append_char(s1,s2->str[i]);
     }
+}
+
+DynamicString ds_static_string(char * string){
+    DynamicString s_string;
+    s_string.str = string;
+    s_string.end = strlen(string);
+    s_string.max = strlen(string)+1;
+    return s_string;
+}
+
+DynamicString ds_static_substring(DynamicString* input, int start, int end){
+    DynamicString s_string;
+    s_string.end = end-start;
+    s_string.max = end-start+1;
+    s_string.str = input->str + start;
+    return s_string;
 }
