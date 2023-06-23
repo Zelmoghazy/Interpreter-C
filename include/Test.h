@@ -3,3 +3,4 @@
 
 void TestNextToken1();
 void TestNextToken2();
+void TestNextToken3();

@@ -20,7 +20,7 @@ char* ds_get_char_array(DynamicString *string){
 char ds_get_char_at(DynamicString *string, size_t index){
     if(index > string->end){
         printf("getCharAt: Index Exceeded string length\n");
-        return string->str[string->end-2];
+        return string->str[string->end-1];
     }else{
         return string->str[index];
     }
@@ -36,7 +36,7 @@ DynamicString* ds_new(size_t initialSize){
         exit(EXIT_FAILURE);
     }
     string->max = initialSize+1;
-    string->end = 1;
+    string->end = 0;
     string->str = malloc(string->max*sizeof(char));
     if(string->str == NULL){
         printf("newString: str allocation failed\n");
@@ -67,6 +67,7 @@ DynamicString* ds_new_init(char * initialString){
  */
 void ds_free(DynamicString *string){
     free(string->str);
+    string->str = NULL;
     free(string);
 }
 
@@ -112,9 +113,9 @@ void ds_shrink(DynamicString *string){
  */
 void ds_append_char(DynamicString *string, char value){
     if(string->end < string->max){
+        string->end++;
         string->str[string->end-1] = value;
         string->str[string->end] = '\0';
-        string->end++;
     }else{
         ds_expand(string);
         ds_append_char(string,value);
@@ -166,9 +167,16 @@ DynamicString *ds_read_file(char* path, bool(* filter)(char)){
  *  returns 0 if equal
  */
 int ds_compare(DynamicString* s1, DynamicString* s2) {
-    char* str1 = s1->str;
-    char* str2 = s2->str;
-    return strcmp(str1,str2);
+    if(s1->end != s2->end){
+        return -1;
+    }else{
+        for (size_t i = 0; i < s1->end; i++){
+            if(s1->str[i] != s2->str[i]){
+                return -1;
+            }
+        }
+        return 0;
+    }
 }
 
 /**

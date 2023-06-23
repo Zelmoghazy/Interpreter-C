@@ -17,22 +17,23 @@ typedef struct DynamicString{
     size_t max;
 }DynamicString;
 
-size_t ds_get_length(DynamicString *string);
-size_t ds_get_capacity(DynamicString *string);
-char* ds_get_char_array(DynamicString *string);
-char ds_get_char_at(DynamicString *string, size_t index);
-DynamicString* ds_new(size_t initialSize);
-DynamicString* ds_new_init(char * initialString);
-void ds_free(DynamicString *string);
-void ds_print(DynamicString *string);
-void ds_expand(DynamicString *string);
-void ds_shrink(DynamicString *string);
-void ds_append_char(DynamicString *string, char value);
-void ds_concat(DynamicString *string, char *str2);
-DynamicString *ds_read_file(char* path,bool(* filter)(char));
-int ds_compare(DynamicString* s1,DynamicString *s2);
-DynamicString *ds_substring(DynamicString* string, size_t start, size_t end);
-void ds_copy(DynamicString* s1 , DynamicString* s2);
-DynamicString ds_static_string(char * string);
+extern size_t ds_get_length(DynamicString *string);
+extern size_t ds_get_capacity(DynamicString *string);
+extern char* ds_get_char_array(DynamicString *string);
+extern char ds_get_char_at(DynamicString *string, size_t index);
+extern DynamicString* ds_new(size_t initialSize);
+extern DynamicString* ds_new_init(char * initialString);
+extern void ds_free(DynamicString *string);
+extern void ds_print(DynamicString *string);
+extern void ds_expand(DynamicString *string);
+extern void ds_shrink(DynamicString *string);
+extern void ds_append_char(DynamicString *string, char value);
+extern void ds_concat(DynamicString *string, char *str2);
+extern DynamicString *ds_read_file(char* path,bool(* filter)(char));
+extern int ds_compare(DynamicString* s1,DynamicString *s2);
+extern DynamicString *ds_substring(DynamicString* string, size_t start, size_t end);
+extern void ds_copy(DynamicString* s1 , DynamicString* s2);
+extern DynamicString ds_static_string(char * string);
+extern DynamicString ds_static_substring(DynamicString* input, int start, int end);
 
 #endif

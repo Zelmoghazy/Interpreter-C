@@ -14,6 +14,8 @@ static const char *name[] =
     "/",
     "<",
     ">",
+    "==",
+    "!=",
     ",",
     ";",
     "(",
@@ -22,6 +24,11 @@ static const char *name[] =
     "}",
     "fn",
     "let",
+    "true",
+    "false",
+    "if",
+    "else",
+    "return"
 };
 
 const char *TokenTypeName(TokenType type)
@@ -35,7 +42,8 @@ const char *TokenTypeName(TokenType type)
  * If it isn’t we just get back IDENTIFIER which is the
  * TokenType for all user-defined identifiers
  */
-TokenType IdentifierFromToken(DynamicString* identifier){
+TokenType IdentifierFromToken(DynamicString* identifier)
+{
     int n = sizeof(name)/sizeof(name[0]);
     for (int i = 0; i <n ; i++){
         if(!strcmp(ds_get_char_array(identifier),name[i])){
@@ -48,7 +56,8 @@ TokenType IdentifierFromToken(DynamicString* identifier){
 /**
  * Returns a new Lexer initialized with sourcecode(Constructor)
  */
-Lexer* NewLexer(DynamicString* input){
+Lexer* NewLexer(DynamicString* input)
+{
     Lexer *L = malloc(sizeof(Lexer));
     if(L == NULL){
         printf("NewLexer: Allocation Failed");
@@ -65,7 +74,8 @@ Lexer* NewLexer(DynamicString* input){
 /**
  * Free Allocated Memory
  */
-void FreeLexer(Lexer* L){
+void FreeLexer(Lexer* L)
+{
     ds_free(L->input);
     free(L);
 }
@@ -79,7 +89,8 @@ void FreeLexer(Lexer* L){
  * l.position always points to the position where we last read. 
  */
 
-void readChar(Lexer *L){
+void readChar(Lexer *L)
+{
     if (L->readPosition >= (int)ds_get_length(L->input)){ // Exceeded the input
         L->ch = 0;
     }else{
@@ -92,7 +103,8 @@ void readChar(Lexer *L){
 /**
  * Initialize Tokens  
  */
-Token newToken(TokenType type, DynamicString* string) {
+Token newToken(TokenType type, DynamicString* string)
+{
     Token token;
     token.Type = type;
     token.Literal = string;
@@ -108,59 +120,88 @@ Token NextToken(Lexer* L) {
     Token tok;
     skipWhitespace(L);
     
-    char character[2];
+    char character[3];
     character[0] = L->ch;
     character[1] = '\0';
+    character[2] = '\0';
 
     DynamicString s_ch;
-    DynamicString *s_ch_ptr;
 
     switch (L->ch) {
         case '=':
-            s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(ASSIGN, s_ch_ptr);
-            break;
-        case ';':
-            s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(SEMICOLON, s_ch_ptr);
-            break;
-        case '(':
-            s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(LPAREN, s_ch_ptr);
-            break;
-        case ')':
-            s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(RPAREN, s_ch_ptr);
-            break;
-        case ',':
-            s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(COMMA, s_ch_ptr);
+            if(peekChar(L) == '='){
+                character[1] = '=';
+                readChar(L);
+                s_ch = ds_static_string(character);
+                tok = newToken(EQ,&s_ch);
+            }else{
+                s_ch = ds_static_string(character);
+                tok = newToken(ASSIGN, &s_ch);
+            }
             break;
         case '+':
             s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(PLUS, s_ch_ptr);
+            tok = newToken(PLUS, &s_ch);
+            break;
+        case '-':
+            s_ch = ds_static_string(character);
+            tok = newToken(MINUS, &s_ch);
+            break;
+        case '!':
+            if(peekChar(L)== '='){
+                character[1] = '=';
+                readChar(L);
+                s_ch = ds_static_string(character);
+                tok = newToken(NEQ,&s_ch);
+            }else{
+                s_ch = ds_static_string(character);
+                tok = newToken(BANG, &s_ch);
+            }
+            break;
+        case '/':
+            s_ch = ds_static_string(character);
+            tok = newToken(SLASH, &s_ch);
+            break;
+        case '*':
+            s_ch = ds_static_string(character);
+            tok = newToken(ASTERISK, &s_ch);
+            break;
+        case '<':
+            s_ch = ds_static_string(character);
+            tok = newToken(LT, &s_ch);
+            break;
+        case '>':
+            s_ch = ds_static_string(character);
+            tok = newToken(GT, &s_ch);
+            break;
+        case ',':
+            s_ch = ds_static_string(character);
+            tok = newToken(COMMA, &s_ch);
+            break;
+        case ';':
+            s_ch = ds_static_string(character);
+            tok = newToken(SEMICOLON, &s_ch);
+            break;
+        case '(':
+            s_ch = ds_static_string(character);
+            tok = newToken(LPAREN, &s_ch);
+            break;
+        case ')':
+            s_ch = ds_static_string(character);
+            tok = newToken(RPAREN, &s_ch);
             break;
         case '{':
             s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(LBRACE, s_ch_ptr);
+            tok = newToken(LBRACE, &s_ch);
             break;
         case '}':
             s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok = newToken(RBRACE, s_ch_ptr);
+            tok = newToken(RBRACE, &s_ch);
             break;
         case '\0':
             character[0] = '\0';
             s_ch = ds_static_string(character);
-            s_ch_ptr = &s_ch;
-            tok.Literal = s_ch_ptr;
+            tok.Literal = &s_ch;
             tok.Type = EOFILE;
             break;
         default:{
@@ -177,8 +218,7 @@ Token NextToken(Lexer* L) {
             else{
                 // Dont know how to handle 
                 s_ch = ds_static_string(character);
-                s_ch_ptr = &s_ch;
-                tok = newToken(ILLEGAL,s_ch_ptr);
+                tok = newToken(ILLEGAL,&s_ch);
             }
         }            
     }
@@ -197,6 +237,7 @@ DynamicString *readIdentifier(Lexer *L){
     }
     return ds_substring(L->input,position,L->position);
 }
+
 DynamicString *readNumber(Lexer *L){
     int position = L->position;
     while(isDigit(L->ch)){
@@ -226,4 +267,14 @@ void skipWhitespace(Lexer* l) {
     {
         readChar(l);
     }
+}
+
+/**
+ *  “peek” ahead in the input and not move around in it 
+ */
+char peekChar(Lexer *l){
+    if(l->readPosition >= ds_get_length(l->input))
+        return 0;
+    else
+        return l->input->str[l->readPosition];
 }

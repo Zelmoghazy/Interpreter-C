@@ -112,10 +112,10 @@ void TestNextToken3(){
 		"}"
 		"10 == 10;"
 		"10 != 9;"
-		"\"foobar\""
-		"\"foo bar\""
-		"[1, 2];"
-		"{\"foo\": \"bar\"}"
+		// "\"foobar\""
+		// "\"foo bar\""
+		// "[1, 2];"
+		// "{\"foo\": \"bar\"}"
     );
     const Token tests[] = {
         {LET         ,ds_new_init("let")},
@@ -184,27 +184,27 @@ void TestNextToken3(){
 		{SEMICOLON   ,ds_new_init(";")},
 		{RBRACE      ,ds_new_init("}")},
 		{INT         ,ds_new_init("10")},
-		{EQUAL       ,ds_new_init("==")},
+		{EQ          ,ds_new_init("==")},
 		{INT         ,ds_new_init("10")},
 		{SEMICOLON   ,ds_new_init(";")},
 		{INT         ,ds_new_init("10")},
-		{NOTEQUAL    ,ds_new_init("!=")},
+		{NEQ         ,ds_new_init("!=")},
 		{INT         ,ds_new_init("9")},
 		{SEMICOLON   ,ds_new_init(";")},
-		{STRING      ,ds_new_init("foobar")},
-		{STRING      ,ds_new_init("foo bar")},
-		{LBRACKET    ,ds_new_init("[")},
-		{INT         ,ds_new_init("1")},
-		{COMMA       ,ds_new_init(",")},
-		{INT         ,ds_new_init("2")},
-		{RBRACKET    ,ds_new_init("]")},
-		{SEMICOLON   ,ds_new_init(";")},
-		{LBRACE      ,ds_new_init("{")},
-		{STRING      ,ds_new_init("foo")},
-		{COLON       ,ds_new_init(":")},
-		{STRING      ,ds_new_init("bar")},
-		{RBRACE      ,ds_new_init("}")},
-		{EOFILE      ,ds_new_init("")},
+		// {STRING      ,ds_new_init("foobar")},
+		// {STRING      ,ds_new_init("foo bar")},
+		// {LBRACKET    ,ds_new_init("[")},
+		// {INT         ,ds_new_init("1")},
+		// {COMMA       ,ds_new_init(",")},
+		// {INT         ,ds_new_init("2")},
+		// {RBRACKET    ,ds_new_init("]")},
+		// {SEMICOLON   ,ds_new_init(";")},
+		// {LBRACE      ,ds_new_init("{")},
+		// {STRING      ,ds_new_init("foo")},
+		// {COLON       ,ds_new_init(":")},
+		// {STRING      ,ds_new_init("bar")},
+		// {RBRACE      ,ds_new_init("}")},
+		{EOFILE      ,ds_new_init("")}
     };
     Lexer *L = NewLexer(input);
     size_t numTests = sizeof(tests)/sizeof(tests[0]);

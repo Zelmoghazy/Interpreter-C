@@ -25,7 +25,8 @@ typedef enum
 
     LT,
     GT,
-
+    EQ,
+    NEQ,
     /* Delimiters */
     COMMA,
     SEMICOLON,
@@ -37,7 +38,12 @@ typedef enum
 
     /* Keywords */
     FUNCTION,
-    LET
+    LET,
+    T,
+    F,
+    IF,
+    ELSE,
+    RETURN
 } TokenType;
 
 typedef struct Token {
@@ -69,3 +75,4 @@ bool isLetter(char ch);
 bool isDigit(char ch);
 const char *TokenTypeName(TokenType type);
 void skipWhitespace(Lexer* l);
+char peekChar(Lexer *l);

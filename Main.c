@@ -25,6 +25,6 @@
 
 
 int main(){
-    TestNextToken2();
+    TestNextToken3();
     system("pause");
 }
