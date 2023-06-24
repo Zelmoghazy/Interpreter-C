@@ -22,9 +22,10 @@
 
 
 #include "./include/Test.h"
+#include "./include/repl.h"
 
 
 int main(){
-    TestNextToken3();
+    Start(stdin,stdout);
     system("pause");
 }

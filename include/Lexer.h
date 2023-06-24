@@ -1,3 +1,6 @@
+#ifndef LEXER_HEADER
+#define LEXER_HEADER
+
 #include "../include/DynamicString.h"
 
 /** - Numbers -> INT
@@ -48,7 +51,7 @@ typedef enum
 
 typedef struct Token {
     TokenType Type;         // Distinguish between different token types, ex: INT
-    DynamicString* Literal; // Literal value of the token, ex "5"
+    DynamicString Literal; // Literal value of the token, ex "5"
 } Token;
 
 /** 
@@ -69,10 +72,13 @@ void readChar(Lexer *L);
 void TestNextToken();
 Token newToken(TokenType type, DynamicString* string);
 Token NextToken(Lexer* L);
-DynamicString *readIdentifier(Lexer *L);
-DynamicString *readNumber(Lexer *L);
+DynamicString readIdentifier(Lexer *L);
+DynamicString readNumber(Lexer *L);
 bool isLetter(char ch);
 bool isDigit(char ch);
 const char *TokenTypeName(TokenType type);
 void skipWhitespace(Lexer* l);
 char peekChar(Lexer *l);
+size_t lineLength(char *line , int size);
+
+#endif

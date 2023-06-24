@@ -1,7 +1,5 @@
 #include "../include/DynamicString.h"
 
-
-
 /**
  *  Access Internal string data through those only  
  */
@@ -18,7 +16,7 @@ char* ds_get_char_array(DynamicString *string){
 }
 
 char ds_get_char_at(DynamicString *string, size_t index){
-    if(index > string->end){
+    if(index >= string->end){
         printf("getCharAt: Index Exceeded string length\n");
         return string->str[string->end-1];
     }else{
@@ -61,6 +59,12 @@ DynamicString* ds_new_init(char * initialString){
     return string;
 }
 
+DynamicString ds_init(DynamicString string, size_t size){
+    string.end = size;
+    string.max = size+1;
+    string.str = malloc(sizeof(char)*string.max);
+    return string;
+}
 
 /**
  *  Free Allocated memory 
@@ -72,10 +76,11 @@ void ds_free(DynamicString *string){
 }
 
 /**
- *  Print String 
+ *  Print String
+ *  not necessarily null terminated
  */
 void ds_print(DynamicString *string){
-    for (size_t i =0 ; i < string->end; i++){
+    for (size_t i = 0 ; i < string->end; i++){
         printf("%c",string->str[i]);
     }
     printf("\n");  
@@ -165,6 +170,7 @@ DynamicString *ds_read_file(char* path, bool(* filter)(char)){
 
 /**
  *  returns 0 if equal
+ *  not necessarily null terminated.
  */
 int ds_compare(DynamicString* s1, DynamicString* s2) {
     if(s1->end != s2->end){
@@ -220,4 +226,27 @@ DynamicString ds_static_substring(DynamicString* input, int start, int end){
     s_string.max = end-start+1;
     s_string.str = input->str + start;
     return s_string;
+}
+
+char * ds_char_array_view(DynamicString string){
+    char* view = malloc(sizeof(char)*string.end+1);
+    for (int i = 0; i < string.end; i++){
+        view[i] = string.str[i];
+    }
+    view[string.end] = '\0';
+    return view;
+    
+}
+
+int ds_static_compare(DynamicString s1, DynamicString s2) {
+    if(s1.end != s2.end){
+        return -1;
+    }else{
+        for (size_t i = 0; i < s1.end; i++){
+            if(s1.str[i] != s2.str[i]){
+                return -1;
+            }
+        }
+        return 0;
+    }
 }

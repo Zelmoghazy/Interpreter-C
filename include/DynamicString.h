@@ -21,8 +21,11 @@ extern size_t ds_get_length(DynamicString *string);
 extern size_t ds_get_capacity(DynamicString *string);
 extern char* ds_get_char_array(DynamicString *string);
 extern char ds_get_char_at(DynamicString *string, size_t index);
+
 extern DynamicString* ds_new(size_t initialSize);
 extern DynamicString* ds_new_init(char * initialString);
+extern DynamicString ds_init(DynamicString string, size_t size);
+
 extern void ds_free(DynamicString *string);
 extern void ds_print(DynamicString *string);
 extern void ds_expand(DynamicString *string);
@@ -35,5 +38,6 @@ extern DynamicString *ds_substring(DynamicString* string, size_t start, size_t e
 extern void ds_copy(DynamicString* s1 , DynamicString* s2);
 extern DynamicString ds_static_string(char * string);
 extern DynamicString ds_static_substring(DynamicString* input, int start, int end);
-
+int ds_static_compare(DynamicString s1, DynamicString s2);
+char * ds_char_array_view(DynamicString string);
 #endif
